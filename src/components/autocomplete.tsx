@@ -35,6 +35,10 @@ export function AutoComplete<T extends string>({
   placeholder = "Search...",
 }: Props<T>) {
   const [open, setOpen] = useState(false);
+  const [selectedIem, setSelectedItem] = useState({
+    value: selectedValue,
+    label: searchValue,
+  });
 
   const labels = useMemo(
     () =>
@@ -48,6 +52,7 @@ export function AutoComplete<T extends string>({
   const reset = () => {
     onSelectedValueChange("" as T);
     onSearchValueChange("");
+    setSelectedItem({ value: "" as T, label: "" });
   };
 
   const onInputBlur = (e: React.FocusEvent<HTMLInputElement>) => {
@@ -55,7 +60,11 @@ export function AutoComplete<T extends string>({
       !e.relatedTarget?.hasAttribute("cmdk-list") &&
       labels[selectedValue] !== searchValue
     ) {
-      reset();
+      if (selectedValue) {
+        onSearchValueChange(selectedIem.label);
+      } else {
+        reset();
+      }
     }
   };
 
@@ -65,6 +74,10 @@ export function AutoComplete<T extends string>({
     } else {
       onSelectedValueChange(inputValue as T);
       onSearchValueChange(labels[inputValue] ?? "");
+      setSelectedItem({
+        value: inputValue as T,
+        label: labels[inputValue] ?? "",
+      });
     }
     setOpen(false);
   };
